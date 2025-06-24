@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Admin Panel - Free Fire Kingdom</title>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #1a1d26;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(45deg, #ff5c00, #ff7a00);
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(45deg, #e06000, #ff5c00);
+  }
+
+  /* Base Styles */
+  body {
+    margin: 0; padding: 0; min-height: 100vh;
+    background: linear-gradient(135deg, #12141d 0%, #1a1d26 100%);
+    color: #f0f0f0;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: linear-gradient(90deg, #1f222f 0%, #252a3a 100%);
+    padding: 1rem;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.8rem;
+    background: linear-gradient(45deg, #ff5c00, #ff9a00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 15px rgba(255, 92, 0, 0.3);
+    user-select: none;
+    position: relative;
+    box-shadow: 0 0 15px 3px rgba(255, 122, 0, 0.2);
+  }
+  .admin-status {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.9rem;
+    color: #4caf50;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .admin-status::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4caf50;
+  }
+  main {
+    flex-grow: 1;
+    max-width: 1000px;
+    margin: 1.5rem auto;
+    padding: 0 1rem;
+  }
+  section {
+    background: linear-gradient(135deg, #222734 0%, #252a3a 100%);
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 0 15px rgba(255, 122, 0, 0.2);
+    border: 1px solid rgba(255, 122, 0, 0.1);
+  }
+  h2 {
+    margin-top: 0;
+    color: #ff7a00;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.3rem;
+  }
+  label {
+    display: block;
+    margin: 0.8rem 0 0.3rem 0;
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  input[type="text"],
+  input[type="url"],
+  input[type="number"],
+  textarea,
+  input[type="password"],
+  input[type="color"],
+  select {
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    background: rgba(45, 48, 61, 0.7);
+    color: #f0f0f0;
+    margin-bottom: 0.5rem;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  button {
+    background: linear-gradient(135deg, #ff5c00, #ff7a00);
+    color: #fff;
+    font-weight: 700;
+    padding: 0.6rem 1.4rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255, 122, 0, 0.4);
+    margin-top: 1rem;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+  }
+  button:hover {
+    background: linear-gradient(135deg, #e06000, #ff5c00);
+    transform: translateY(-2px);
+  }
+  button:disabled {
+    background: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  .content-list {
+    max-height: 220px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    border: 1px solid rgba(255, 122, 0, 0.3);
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 0.9rem;
+    background: rgba(45, 48, 61, 0.5);
+  }
+  .content-item {
+    margin-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(255, 122, 0, 0.2);
+    padding-bottom: 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .content-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+  .content-item span {
+    font-weight: 600;
+    color: #ffa040;
+  }
+  .content-item small {
+    color: #aaa;
+    font-size: 0.8rem;
+  }
+  .content-item-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .content-item-actions button {
+    margin: 0;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  .content-item-actions .edit-btn {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.4);
+  }
+  .content-item-actions .edit-btn:hover {
+    background: linear-gradient(135deg, #3d8b40, #2e7d32);
+  }
+  .content-item-actions .delete-btn {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    box-shadow: 0 0 8px rgba(244, 67, 54, 0.4);
+  }
+  .content-item-actions .delete-btn:hover {
+    background: linear-gradient(135deg, #e53935, #d32f2f);
+  }
+  .logout-btn {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+    margin-top: 1.5rem;
+    box-shadow: 0 0 12px rgba(244, 67, 54, 0.4);
+    width: 100%;
+  }
+  .logout-btn:hover {
+    background: linear-gradient(135deg, #e53935, #d32f2f);
+  }
+  .color-preview {
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+    border: 2px solid #444;
+  }
+  .stats-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .stat-card {
+    background: rgba(45, 48, 61, 0.7);
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+    border: 1px solid rgba(255, 122, 0, 0.1);
+  }
+  .stat-card h3 {
+    margin: 0 0 0.5rem 0;
+    color: #ffa040;
+    font-size: 1rem;
+  }
+  .stat-card p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .visitor-log {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    font-size: 0.8rem;
+    background: rgba(45, 48, 61, 0.5);
+    border-radius: 8px;
+    padding: 0.5rem;
+    border: 1px solid rgba(255, 122, 0, 0.1);
+  }
+  .visitor-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(255, 122, 0, 0.1);
+  }
+  .visitor-item:last-child {
+    border-bottom: none;
+  }
+  .visitor-time {
+    color: #aaa;
+    font-size: 0.7rem;
+  }
+  .paid-users-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    background: rgba(45, 48, 61, 0.5);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 122, 0, 0.1);
+    padding: 0.5rem;
+  }
+  .paid-user {
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background: rgba(45, 48, 61, 0.7);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .paid-user-info {
+    flex-grow: 1;
+  }
+  .paid-user-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .paid-user-actions button {
+    margin: 0;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  .message-item {
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background: rgba(45, 48, 61, 0.7);
+    border-radius: 8px;
+  }
+  .message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .message-content {
+    margin-bottom: 0.5rem;
+  }
+  .message-reply {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 122, 0, 0.1);
+  }
+  .message-reply textarea {
+    margin-top: 0.5rem;
+  }
+  .message-reply-btn {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+  .order-log {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    background: rgba(45, 48, 61, 0.5);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 122, 0, 0.1);
+    padding: 0.5rem;
+  }
+  .order-item {
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background: rgba(45, 48, 61, 0.7);
+    border-radius: 8px;
+  }
+  .order-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .order-details {
+    font-size: 0.9rem;
+  }
+  .order-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 0.5rem;
+  }
+  .order-actions button {
+    margin: 0;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8rem;
+  }
+  .approve-btn {
+    background: linear-gradient(135deg, #4caf50, #2e7d32);
+  }
+  .reject-btn {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+  }
+
+  /* Login Section */
+  #loginSection {
+    max-width: 400px;
+    margin: 5rem auto;
+    background: linear-gradient(135deg, #222533 0%, #252a3a 100%);
+    padding: 2rem 2rem 2.5rem;
+    border-radius: 14px;
+    box-shadow: 0 0 20px rgba(255, 92, 0, 0.3);
+    text-align: center;
+    border: 1px solid rgba(255, 122, 0, 0.1);
+  }
+  #loginSection h2 {
+    justify-content: center;
+  }
+  #loginSection input[type="password"] {
+    margin-top: 1.5rem;
+  }
+  #loginSection button {
+    margin-top: 1.5rem;
+    width: 100%;
+  }
+  #loginMessage {
+    color: #ff5555;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    min-height: 1.2rem;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid rgba(255, 122, 0, 0.3);
+    margin-bottom: 1rem;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+  .tab {
+    padding: 0.6rem 1.2rem;
+    cursor: pointer;
+    font-weight: 600;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+  }
+  .tab.active {
+    border-bottom: 3px solid #ff7a00;
+    color: #ff7a00;
+  }
+  .tab-content {
+    display: none;
+  }
+  .tab-content.active {
+    display: block;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    header {
+      font-size: 1.5rem;
+      padding: 1rem 0.5rem;
+    }
+    .admin-status {
+      position: static;
+      transform: none;
+      justify-content: center;
+      margin-top: 0.5rem;
+    }
+    section {
+      padding: 1rem;
+    }
+    .stats-container {
+      grid-template-columns: 1fr 1fr;
+    }
+    .paid-user, .message-item, .order-item {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .paid-user-actions {
+      align-self: flex-end;
+    }
+    .order-actions {
+      justify-content: flex-end;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .content-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+    .content-item-actions {
+      align-self: flex-end;
+    }
+    .stats-container {
+      grid-template-columns: 1fr;
+    }
+    .tabs {
+      flex-wrap: wrap;
+    }
+    .tab {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+  }
+</style>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+
+<div id="loginSection" aria-label="Admin Login Section">
+  <h2><i class="fas fa-lock"></i> Admin Login</h2>
+  <input type="password" id="adminKeyInput" placeholder="Enter admin key" aria-label="Admin Key" autocomplete="off" />
+  <button id="loginBtn">Login</button>
+  <p id="loginMessage"></p>
+</div>
+
+<main id="adminPanel" style="display:none;" aria-label="Admin Control Panel">
+  <header>
+    Free Fire Kingdom Admin Panel
+    <div class="admin-status">Admin Active</div>
+  </header>
+
+  <div class="tabs">
+    <div class="tab active" data-tab="content"><i class="fas fa-box-open"></i> Content</div>
+    <div class="tab" data-tab="paid"><i class="fas fa-user-check"></i> Paid Users</div>
+    <div class="tab" data-tab="messages"><i class="fas fa-comments"></i> User Messages</div>
+    <div class="tab" data-tab="orders"><i class="fas fa-receipt"></i> Order Logs</div>
+    <div class="tab" data-tab="appearance"><i class="fas fa-palette"></i> Appearance</div>
+    <div class="tab" data-tab="stats"><i class="fas fa-chart-line"></i> Statistics</div>
+  </div>
+
+  <div class="tab-content active" id="contentTab">
+    <section aria-label="Add New Content">
+      <h2><i class="fas fa-plus-circle"></i> Add / Update Content</h2>
+      <label for="titleInput">Title</label>
+      <input type="text" id="titleInput" placeholder="Enter title" />
+      <label for="descInput">Description</label>
+      <textarea id="descInput" placeholder="Enter description"></textarea>
+      <label for="imageUrlInput">Image URL</label>
+      <input type="url" id="imageUrlInput" placeholder="https://example.com/image.jpg" />
+      <label for="fileUrlInput">File URL (download link)</label>
+      <input type="url" id="fileUrlInput" placeholder="https://example.com/file.zip" />
+      <label for="downloadsInput">Downloads Count</label>
+      <input type="number" id="downloadsInput" placeholder="Enter number of downloads" min="0" />
+      <label for="contentType">Content Type</label>
+      <select id="contentType">
+        <option value="sensi">Sensi</option>
+        <option value="emulator">Emulator</option>
+        <option value="paid-sensi">Paid Sensi</option>
+        <option value="other">Other</option>
+      </select>
+      <div style="display: flex; align-items: center; gap: 1rem; margin: 1rem 0;">
+        <input type="checkbox" id="isPaidInput" />
+        <label for="isPaidInput" style="margin: 0;">Is Paid Content</label>
+        <input type="number" id="priceInput" placeholder="Price in BDT" min="0" style="width: 100px; display: none;" />
+      </div>
+
+      <button id="saveContentBtn"><i class="fas fa-save"></i> Save Content</button>
+      <button id="clearFormBtn" style="background: #666; margin-left: 10px;"><i class="fas fa-broom"></i> Clear Form</button>
+    </section>
+
+    <section aria-label="Edit Notice Banner">
+      <h2><i class="fas fa-bullhorn"></i> Global Notice Banner</h2>
+      <label for="noticeTextInput">Notice Text</label>
+      <textarea id="noticeTextInput" placeholder="Enter notice text (leave empty to hide)"></textarea>
+      <label for="noticeImageInput">Notice Image URL (optional)</label>
+      <input type="url" id="noticeImageInput" placeholder="https://example.com/notice.png" />
+      <button id="saveNoticeBtn"><i class="fas fa-save"></i> Save Notice</button>
+    </section>
+
+    <section aria-label="Edit Footer Text">
+      <h2><i class="fas fa-text-height"></i> Footer Text</h2>
+      <input type="text" id="footerTextInput" placeholder="Enter footer text" />
+      <button id="saveFooterBtn"><i class="fas fa-save"></i> Save Footer</button>
+    </section>
+
+    <section aria-label="Content List">
+      <h2><i class="fas fa-list"></i> Existing Contents</h2>
+      <div class="content-list" id="contentList"></div>
+    </section>
+  </div>
+
+  <div class="tab-content" id="paidTab">
+    <section aria-label="Paid Users Management">
+      <h2><i class="fas fa-user-check"></i> Paid Users Management</h2>
+      <div class="paid-users-list" id="paidUsersList"></div>
+    </section>
+  </div>
+
+  <div class="tab-content" id="messagesTab">
+    <section aria-label="User Messages">
+      <h2><i class="fas fa-comments"></i> User Messages</h2>
+      <div id="messagesList"></div>
+    </section>
+  </div>
+
+  <div class="tab-content" id="ordersTab">
+    <section aria-label="Order Logs">
+      <h2><i class="fas fa-receipt"></i> Order Logs</h2>
+      <div class="order-log" id="orderLog"></div>
+    </section>
+  </div>
+
+  <div class="tab-content" id="appearanceTab">
+    <section aria-label="Theme Customization">
+      <h2><i class="fas fa-palette"></i> Theme Customization</h2>
+      <label for="primaryColor">Primary Color</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="color" id="primaryColor" value="#ff5c00" />
+        <span class="color-preview" id="primaryColorPreview" style="background: #ff5c00;"></span>
+      </div>
+      
+      <label for="bgColor">Background Color</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="color" id="bgColor" value="#0f1117" />
+        <span class="color-preview" id="bgColorPreview" style="background: #0f1117;"></span>
+      </div>
+      
+      <label for="textColor">Text Color</label>
+      <div style="display: flex; gap: 10px;">
+        <input type="color" id="textColor" value="#e0e0e0" />
+        <span class="color-preview" id="textColorPreview" style="background: #e0e0e0;"></span>
+      </div>
+      
+      <button id="saveThemeBtn"><i class="fas fa-save"></i> Save Theme</button>
+      <button id="resetThemeBtn" style="background: #666; margin-left: 10px;"><i class="fas fa-undo"></i> Reset to Default</button>
+    </section>
+  </div>
+
+  <div class="tab-content" id="statsTab">
+    <section aria-label="Statistics">
+      <h2><i class="fas fa-chart-line"></i> Statistics</h2>
+      <div class="stats-container">
+        <div class="stat-card">
+          <h3><i class="fas fa-users"></i> Total Visitors</h3>
+          <p id="totalVisitors">0</p>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-user-clock"></i> Current Visitors</h3>
+          <p id="currentVisitors">0</p>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-download"></i> Total Downloads</h3>
+          <p id="totalDownloads">0</p>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-boxes"></i> Total Contents</h3>
+          <p id="totalContents">0</p>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-user-tag"></i> Total Paid Users</h3>
+          <p id="totalPaidUsers">0</p>
+        </div>
+        <div class="stat-card">
+          <h3><i class="fas fa-money-bill-wave"></i> Total Revenue</h3>
+          <p id="totalRevenue">0 BDT</p>
+        </div>
+      </div>
+      
+      <h3 style="margin-top: 1.5rem;"><i class="fas fa-history"></i> Visitor Log</h3>
+      <div class="visitor-log" id="visitorLog"></div>
+      
+      <h3 style="margin-top: 1.5rem;"><i class="fas fa-chart-bar"></i> Downloads Chart</h3>
+      <canvas id="downloadsChart" height="200"></canvas>
+    </section>
+  </div>
+
+  <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</main>
+
+<script>
+  const ADMIN_KEY = "swampod";
+
+  // Firebase config (same as main site)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDX7Z8o5xVJa8cSHvaurZg4FkJvN8mJuto",
+    authDomain: "free-fire-kingdom.firebaseapp.com",
+    databaseURL: "https://free-fire-kingdom-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "free-fire-kingdom",
+    storageBucket: "free-fire-kingdom.appspot.com",
+    messagingSenderId: "889375613179",
+    appId: "1:889375613179:web:b36bd72dd208b101e0d05e",
+    measurementId: "G-0EWSZ3SFX1"
+  };
+
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // Elements
+  const loginSection = document.getElementById('loginSection');
+  const adminPanel = document.getElementById('adminPanel');
+  const adminKeyInput = document.getElementById('adminKeyInput');
+  const loginBtn = document.getElementById('loginBtn');
+  const loginMessage = document.getElementById('loginMessage');
+
+  // Content elements
+  const titleInput = document.getElementById('titleInput');
+  const descInput = document.getElementById('descInput');
+  const imageUrlInput = document.getElementById('imageUrlInput');
+  const fileUrlInput = document.getElementById('fileUrlInput');
+  const downloadsInput = document.getElementById('downloadsInput');
+  const contentType = document.getElementById('contentType');
+  const isPaidInput = document.getElementById('isPaidInput');
+  const priceInput = document.getElementById('priceInput');
+  const saveContentBtn = document.getElementById('saveContentBtn');
+  const clearFormBtn = document.getElementById('clearFormBtn');
+  const contentList = document.getElementById('contentList');
+
+  // Notice elements
+  const noticeTextInput = document.getElementById('noticeTextInput');
+  const noticeImageInput = document.getElementById('noticeImageInput');
+  const saveNoticeBtn = document.getElementById('saveNoticeBtn');
+
+  // Footer elements
+  const footerTextInput = document.getElementById('footerTextInput');
+  const saveFooterBtn = document.getElementById('saveFooterBtn');
+
+  // Paid users elements
+  const paidUsersList = document.getElementById('paidUsersList');
+
+  // Messages elements
+  const messagesList = document.getElementById('messagesList');
+
+  // Orders elements
+  const orderLog = document.getElementById('orderLog');
+
+  // Theme elements
+  const primaryColor = document.getElementById('primaryColor');
+  const primaryColorPreview = document.getElementById('primaryColorPreview');
+  const bgColor = document.getElementById('bgColor');
+  const bgColorPreview = document.getElementById('bgColorPreview');
+  const textColor = document.getElementById('textColor');
+  const textColorPreview = document.getElementById('textColorPreview');
+  const saveThemeBtn = document.getElementById('saveThemeBtn');
+  const resetThemeBtn = document.getElementById('resetThemeBtn');
+
+  // Stats elements
+  const totalVisitors = document.getElementById('totalVisitors');
+  const currentVisitors = document.getElementById('currentVisitors');
+  const totalDownloads = document.getElementById('totalDownloads');
+  const totalContents = document.getElementById('totalContents');
+  const totalPaidUsers = document.getElementById('totalPaidUsers');
+  const totalRevenue = document.getElementById('totalRevenue');
+  const visitorLog = document.getElementById('visitorLog');
+  const downloadsChart = document.getElementById('downloadsChart');
+
+  // Tab elements
+  const tabs = document.querySelectorAll('.tab');
+  const tabContents = document.querySelectorAll('.tab-content');
+
+  // Logout button
+  const logoutBtn = document.getElementById('logoutBtn');
+
+  // State
+  let currentEditingKey = null;
+  let downloadsChartInstance = null;
+
+  // Initialize the admin panel
+  function initAdminPanel() {
+    // Load all initial data
+    loadExistingContent();
+    loadSettings();
+    loadTheme();
+    loadPaidUsers();
+    loadUserMessages();
+    loadOrderLogs();
+    initStats();
+    
+    // Set up real-time listeners
+    setupRealtimeListeners();
+  }
+
+  // Set up real-time listeners
+  function setupRealtimeListeners() {
+    // Current visitors count
+    db.ref('visitorCount').on('value', snapshot => {
+      currentVisitors.textContent = snapshot.numChildren();
+    });
+    
+    // Visitor log updates
+    db.ref('visitorCount').orderByChild('timestamp').limitToLast(10).on('value', updateVisitorLog);
+    
+    // Content updates
+    db.ref('contents').on('value', loadExistingContent);
+    
+    // Paid users updates
+    db.ref('paidUsers').on('value', loadPaidUsers);
+    
+    // Messages updates
+    db.ref('chat/messages').orderByChild('timestamp').on('value', loadUserMessages);
+    
+    // Order updates
+    db.ref('payments').orderByChild('timestamp').on('value', loadOrderLogs);
+  }
+
+  // Toggle price input based on isPaid checkbox
+  isPaidInput.addEventListener('change', () => {
+    priceInput.style.display = isPaidInput.checked ? 'block' : 'none';
+  });
+
+  // Tab switching
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tabContents.forEach(c => c.classList.remove('active'));
+      
+      tab.classList.add('active');
+      document.getElementById(`${tab.dataset.tab}Tab`).classList.add('active');
+    });
+  });
+
+  // Login handler
+  loginBtn.onclick = () => {
+    const key = adminKeyInput.value.trim();
+    if(key === ADMIN_KEY) {
+      loginSection.style.display = 'none';
+      adminPanel.style.display = 'block';
+      loginMessage.textContent = '';
+      initAdminPanel();
+    } else {
+      loginMessage.textContent = "Incorrect admin key!";
+    }
+  };
+
+  // Allow login on Enter key
+  adminKeyInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      loginBtn.click();
+    }
+  });
+
+  logoutBtn.onclick = () => {
+    // Clear all Firebase listeners
+    db.ref('visitorCount').off();
+    db.ref('contents').off();
+    db.ref('paidUsers').off();
+    db.ref('chat/messages').off();
+    db.ref('payments').off();
+    
+    // Reset UI
+    adminKeyInput.value = '';
+    loginSection.style.display = 'block';
+    adminPanel.style.display = 'none';
+    currentEditingKey = null;
+    clearForm();
+  };
+
+  // Clear form
+  clearFormBtn.onclick = clearForm;
+  function clearForm() {
+    titleInput.value = '';
+    descInput.value = '';
+    imageUrlInput.value = '';
+    fileUrlInput.value = '';
+    downloadsInput.value = '';
+    contentType.value = 'sensi';
+    isPaidInput.checked = false;
+    priceInput.value = '';
+    priceInput.style.display = 'none';
+    currentEditingKey = null;
+    saveContentBtn.textContent = 'Save Content';
+  }
+
+  // Load existing contents from Firebase
+  function loadExistingContent() {
+    db.ref('contents').once('value').then(snapshot => {
+      const data = snapshot.val() || {};
+      contentList.innerHTML = '';
+
+      Object.entries(data).forEach(([key, item]) => {
+        const div = document.createElement('div');
+        div.className = 'content-item';
+        div.innerHTML = `
+          <div>
+            <span>${item.title}</span><br/>
+            <small>Type: ${item.type || 'sensi'} | Downloads: ${item.downloads || 0} ${item.isPaid ? `| Price: ${item.price || 50} BDT` : ''}</small>
+          </div>
+          <div class="content-item-actions">
+            <button class="edit-btn" data-key="${key}"><i class="fas fa-edit"></i> Edit</button>
+            <button class="delete-btn" data-key="${key}"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        `;
+        contentList.appendChild(div);
+      });
+
+      // Add event listeners to edit and delete buttons
+      document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const key = e.target.closest('button').dataset.key;
+          editContent(key);
+        });
+      });
+
+      document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const key = e.target.closest('button').dataset.key;
+          if(confirm('Are you sure you want to delete this content?')) {
+            db.ref('contents/' + key).remove()
+              .then(() => loadExistingContent());
+          }
+        });
+      });
+    });
+  }
+
+  // Edit existing content
+  function editContent(key) {
+    db.ref('contents/' + key).once('value').then(snapshot => {
+      const item = snapshot.val();
+      if(item) {
+        titleInput.value = item.title || '';
+        descInput.value = item.description || '';
+        imageUrlInput.value = item.imageUrl || '';
+        fileUrlInput.value = item.fileUrl || '';
+        downloadsInput.value = item.downloads || 0;
+        contentType.value = item.type || 'sensi';
+        isPaidInput.checked = item.isPaid || false;
+        priceInput.value = item.price || '';
+        priceInput.style.display = isPaidInput.checked ? 'block' : 'none';
+        currentEditingKey = key;
+        saveContentBtn.textContent = 'Update Content';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+  }
+
+  // Save content (add/update)
+  saveContentBtn.onclick = () => {
+    const title = titleInput.value.trim();
+    const desc = descInput.value.trim();
+    const imageUrl = imageUrlInput.value.trim();
+    const fileUrl = fileUrlInput.value.trim();
+    let downloads = downloadsInput.value.trim();
+    downloads = downloads === '' ? 0 : parseInt(downloads);
+    const type = contentType.value;
+    const isPaid = isPaidInput.checked;
+    let price = priceInput.value.trim();
+    price = price === '' ? 0 : parseInt(price);
+
+    if(!title || !desc || !fileUrl) {
+      alert('Please fill at least Title, Description and File URL');
+      return;
+    }
+
+    if(isPaid && price <= 0) {
+      alert('Please enter a valid price for paid content');
+      return;
+    }
+
+    const contentData = {
+      title,
+      description: desc,
+      imageUrl,
+      fileUrl,
+      downloads,
+      type,
+      isPaid,
+      price: isPaid ? price : 0,
+      timestamp: Date.now()
+    };
+
+    if(currentEditingKey) {
+      // Update existing content
+      db.ref('contents/' + currentEditingKey).update(contentData).then(() => {
+        alert('Content updated successfully!');
+        clearForm();
+        loadExistingContent();
+      }).catch(err => {
+        alert('Error updating content: ' + err.message);
+      });
+    } else {
+      // Add new content
+      const newContentKey = db.ref('contents').push().key;
+      db.ref('contents/' + newContentKey).set(contentData).then(() => {
+        alert('Content saved successfully!');
+        clearForm();
+        loadExistingContent();
+      }).catch(err => {
+        alert('Error saving content: ' + err.message);
+      });
+    }
+  };
+
+  // Load notice and footer
+  function loadSettings() {
+    db.ref('settings').once('value').then(snapshot => {
+      const settings = snapshot.val() || {};
+      noticeTextInput.value = settings.notice ? (settings.notice.text || '') : '';
+      noticeImageInput.value = settings.notice ? (settings.notice.imageUrl || '') : '';
+      footerTextInput.value = settings.footerText || '';
+    });
+  }
+
+  // Save notice
+  saveNoticeBtn.onclick = () => {
+    const text = noticeTextInput.value.trim();
+    const imageUrl = noticeImageInput.value.trim();
+
+    const noticeData = {};
+    if(text) noticeData.text = text;
+    if(imageUrl) noticeData.imageUrl = imageUrl;
+
+    db.ref('settings/notice').set(noticeData).then(() => {
+      alert('Notice saved!');
+    }).catch(err => alert('Error saving notice: ' + err.message));
+  };
+
+  // Save footer
+  saveFooterBtn.onclick = () => {
+    const footerText = footerTextInput.value.trim();
+    db.ref('settings/footerText').set(footerText).then(() => {
+      alert('Footer text saved!');
+    }).catch(err => alert('Error saving footer: ' + err.message));
+  };
+
+  // Load paid users
+  function loadPaidUsers() {
+    db.ref('paidUsers').once('value').then(snapshot => {
+      const data = snapshot.val() || {};
+      paidUsersList.innerHTML = '';
+
+      Object.entries(data).forEach(([key, item]) => {
+        const div = document.createElement('div');
+        div.className = 'paid-user';
+        div.innerHTML = `
+          <div class="paid-user-info">
+            <div><strong>${item.username}</strong> - ${item.contentTitle}</div>
+            <small>Paid: ${item.amount} BDT | ${new Date(item.timestamp).toLocaleString()}</small>
+          </div>
+          <div class="paid-user-actions">
+            <button class="delete-btn" data-key="${key}"><i class="fas fa-trash"></i> Remove</button>
+          </div>
+        `;
+        paidUsersList.appendChild(div);
+
+        // Add delete button functionality
+        div.querySelector('.delete-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if(confirm('Remove this paid user access?')) {
+            db.ref('paidUsers/' + key).remove()
+              .then(() => loadPaidUsers());
+          }
+        });
+      });
+    });
+  }
+
+  // Load user messages with improved chat functionality
+  function loadUserMessages() {
+    db.ref('chat/messages').orderByChild('timestamp').once('value').then(snapshot => {
+      const data = snapshot.val() || {};
+      messagesList.innerHTML = '';
+
+      // Group messages by user
+      const userMessages = {};
+      Object.entries(data).forEach(([key, msg]) => {
+        if (!msg.isAdmin) {
+          if (!userMessages[msg.userId]) {
+            userMessages[msg.userId] = {
+              username: msg.username,
+              messages: [],
+              replies: []
+            };
+          }
+          userMessages[msg.userId].messages.push(msg);
+        } else {
+          // This is an admin reply
+          const userId = msg.replyTo;
+          if (userMessages[userId]) {
+            userMessages[userId].replies.push(msg);
+          }
+        }
+      });
+
+      // Display messages with replies
+      Object.entries(userMessages).forEach(([userId, userData]) => {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message-item';
+        
+        let messagesHtml = '';
+        
+        // Sort all messages by timestamp
+        const allMessages = [...userData.messages, ...userData.replies];
+        allMessages.sort((a, b) => a.timestamp - b.timestamp);
+        
+        // Display all messages in chronological order
+        allMessages.forEach(msg => {
+          const isAdminMsg = msg.isAdmin;
+          messagesHtml += `
+            <div class="message-content">
+              <div class="message-header">
+                <span style="color: ${isAdminMsg ? '#ff7a00' : '#4caf50'}">${msg.username}</span>
+                <span>${new Date(msg.timestamp).toLocaleString()}</span>
+              </div>
+              <div>${msg.message}</div>
+            </div>
+          `;
+        });
+
+        messageDiv.innerHTML = `
+          <div class="message-header">
+            <strong>Conversation with ${userData.username}</strong>
+            <small>User ID: ${userId}</small>
+          </div>
+          ${messagesHtml}
+          <div class="message-reply">
+            <textarea id="reply-${userId}" placeholder="Type your reply to ${userData.username}..."></textarea>
+            <button class="message-reply-btn" data-user="${userId}"><i class="fas fa-paper-plane"></i> Send Reply</button>
+          </div>
+        `;
+        
+        messagesList.appendChild(messageDiv);
+      });
+
+      // Add reply button functionality
+      document.querySelectorAll('.message-reply-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const userId = e.target.dataset.user;
+          const replyText = document.getElementById(`reply-${userId}`).value.trim();
+          
+          if (replyText) {
+            const timestamp = Date.now();
+            db.ref('chat/messages').push().set({
+              userId: 'admin',
+              username: 'Admin',
+              message: replyText,
+              timestamp: timestamp,
+              isAdmin: true,
+              replyTo: userId
+            }).then(() => {
+              document.getElementById(`reply-${userId}`).value = '';
+            }).catch(err => {
+              alert('Error sending reply: ' + err.message);
+            });
+          }
+        });
+      });
+    });
+  }
+
+  // Load order logs with approve/reject functionality
+  function loadOrderLogs() {
+    db.ref('payments').orderByChild('timestamp').once('value').then(snapshot => {
+      const data = snapshot.val() || {};
+      orderLog.innerHTML = '';
+
+      Object.entries(data).forEach(([key, item]) => {
+        const div = document.createElement('div');
+        div.className = 'order-item';
+        div.innerHTML = `
+          <div class="order-header">
+            <span>${item.username} - ${item.contentTitle}</span>
+            <span>${item.amount} BDT</span>
+          </div>
+          <div class="order-details">
+            <div>Method: ${item.paymentMethod} | Txn ID: ${item.transactionId}</div>
+            <div>Status: <span style="color: ${getStatusColor(item.status)}">${item.status}</span> | ${new Date(item.timestamp).toLocaleString()}</div>
+            ${item.adminNote ? `<div>Admin Note: ${item.adminNote}</div>` : ''}
+          </div>
+          <div class="order-actions">
+            <button class="approve-btn" data-key="${key}" ${item.status === 'approved' ? 'disabled' : ''}>
+              <i class="fas fa-check"></i> Approve
+            </button>
+            <button class="reject-btn" data-key="${key}" ${item.status === 'rejected' ? 'disabled' : ''}>
+              <i class="fas fa-times"></i> Reject
+            </button>
+          </div>
+        `;
+        orderLog.appendChild(div);
+
+        // Add approve button functionality
+        div.querySelector('.approve-btn').addEventListener('click', (e) => {
+          const adminNote = prompt(`Approve this payment and grant ${item.username} access to ${item.contentTitle}?\nAdd a note (optional):`);
+          if (adminNote !== null) { // User didn't cancel
+            const updates = {
+              status: 'approved',
+              adminNote: adminNote || '',
+              processedAt: Date.now()
+            };
+            
+            db.ref(`payments/${key}`).update(updates)
+              .then(() => {
+                // Add to paid users
+                const paidUserData = {
+                  username: item.username,
+                  contentId: item.contentId,
+                  contentTitle: item.contentTitle,
+                  amount: item.amount,
+                  paymentMethod: item.paymentMethod,
+                  transactionId: item.transactionId,
+                  timestamp: Date.now()
+                };
+                db.ref('paidUsers').push().set(paidUserData)
+                  .then(() => {
+                    alert('Payment approved and user access granted!');
+                  });
+              });
+          }
+        });
+
+        // Add reject button functionality
+        div.querySelector('.reject-btn').addEventListener('click', (e) => {
+          const adminNote = prompt(`Reject this payment from ${item.username} for ${item.contentTitle}?\nAdd a reason (optional):`);
+          if (adminNote !== null) { // User didn't cancel
+            db.ref(`payments/${key}`).update({
+              status: 'rejected',
+              adminNote: adminNote || '',
+              processedAt: Date.now()
+            }).then(() => {
+              alert('Payment rejected!');
+            });
+          }
+        });
+      });
+    });
+  }
+
+  // Helper function to get status color
+  function getStatusColor(status) {
+    switch(status) {
+      case 'approved': return '#4caf50';
+      case 'pending': return '#ff9800';
+      case 'rejected': return '#f44336';
+      default: return '#9e9e9e';
+    }
+  }
+
+  // Update visitor log
+  function updateVisitorLog(snapshot) {
+    visitorLog.innerHTML = '';
+    const visitors = [];
+    snapshot.forEach(child => {
+      visitors.push({
+        key: child.key,
+        ...child.val()
+      });
+    });
+    
+    visitors.reverse().forEach(visitor => {
+      const div = document.createElement('div');
+      div.className = 'visitor-item';
+      
+      const date = new Date(visitor.timestamp);
+      const timeString = date.toLocaleTimeString();
+      const dateString = date.toLocaleDateString();
+      
+      div.innerHTML = `
+        <div>${visitor.userAgent || 'Unknown device'}</div>
+        <div class="visitor-time">${dateString} ${timeString}</div>
+      `;
+      visitorLog.appendChild(div);
+    });
+  }
+
+  // Load theme
+  function loadTheme() {
+    db.ref('settings/theme').once('value').then(snapshot => {
+      const theme = snapshot.val() || {};
+      primaryColor.value = theme.primaryColor || '#ff5c00';
+      bgColor.value = theme.bgColor || '#0f1117';
+      textColor.value = theme.textColor || '#e0e0e0';
+      
+      primaryColorPreview.style.background = primaryColor.value;
+      bgColorPreview.style.background = bgColor.value;
+      textColorPreview.style.background = textColor.value;
+    });
+  }
+
+  // Save theme
+  saveThemeBtn.onclick = () => {
+    const themeData = {
+      primaryColor: primaryColor.value,
+      bgColor: bgColor.value,
+      textColor: textColor.value
+    };
+
+    db.ref('settings/theme').set(themeData).then(() => {
+      alert('Theme saved! Changes will reflect on the main site.');
+    }).catch(err => alert('Error saving theme: ' + err.message));
+  };
+
+  // Reset theme
+  resetThemeBtn.onclick = () => {
+    primaryColor.value = '#ff5c00';
+    bgColor.value = '#0f1117';
+    textColor.value = '#e0e0e0';
+    
+    primaryColorPreview.style.background = primaryColor.value;
+    bgColorPreview.style.background = bgColor.value;
+    textColorPreview.style.background = textColor.value;
+  };
+
+  // Initialize stats
+  function initStats() {
+    // Total visitors (historical)
+    db.ref('visitorCount').once('value').then(snapshot => {
+      totalVisitors.textContent = snapshot.numChildren();
+    });
+
+    // Total downloads
+    db.ref('contents').once('value').then(snapshot => {
+      const contents = snapshot.val() || {};
+      let total = 0;
+      Object.values(contents).forEach(item => {
+        total += item.downloads || 0;
+      });
+      totalDownloads.textContent = total;
+      totalContents.textContent = Object.keys(contents).length;
+    });
+
+    // Total paid users and revenue
+    db.ref('paidUsers').once('value').then(snapshot => {
+      const paidUsers = snapshot.val() || {};
+      totalPaidUsers.textContent = Object.keys(paidUsers).length;
+      
+      let revenue = 0;
+      Object.values(paidUsers).forEach(user => {
+        revenue += user.amount || 0;
+      });
+      totalRevenue.textContent = revenue + ' BDT';
+    });
+
+    // Downloads chart
+    db.ref('contents').orderByChild('downloads').limitToLast(5).once('value').then(snapshot => {
+      const contents = snapshot.val() || {};
+      const labels = [];
+      const data = [];
+      
+      Object.values(contents).forEach(item => {
+        labels.push(item.title);
+        data.push(item.downloads || 0);
+      });
+      
+      // Reverse to show highest first
+      labels.reverse();
+      data.reverse();
+      
+      if(downloadsChartInstance) {
+        downloadsChartInstance.destroy();
+      }
+      
+      const ctx = downloadsChart.getContext('2d');
+      downloadsChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Downloads',
+            data: data,
+            backgroundColor: '#ff7a00',
+            borderColor: '#ff5c00',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  }
+</script>
+
+</body>
+</html>
