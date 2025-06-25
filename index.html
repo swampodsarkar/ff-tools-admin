@@ -199,7 +199,6 @@
   .logout-btn {
     background: linear-gradient(135deg, #f44336, #d32f2f);
     margin-top: 1.5rem;
-    box-shadow: 0 0 12px rgba(244, 67, 54, 0.4);
     width: 100%;
   }
   .logout-btn:hover {
@@ -1043,178 +1042,127 @@
 
   // Initialize live support system
   function initLiveSupport() {
-    // Listen for new messages
-    db.ref('chat/messages').orderByChild('timestamp').on('value', snapshot => {
-      const messages = snapshot.val() || {};
-      const users = {};
-      const userMessages = {};
-      
-      // Organize messages by user
-      Object.entries(messages).forEach(([key, msg]) => {
-        const userId = msg.isAdmin ? msg.replyTo || 'admin' : msg.userId;
-        
-        if (!users[userId]) {
-          users[userId] = {
-            username: msg.username,
-            lastMessage: msg.message,
-            timestamp: msg.timestamp,
-            isAdmin: msg.isAdmin
-          };
-        }
-        
-        if (!userMessages[userId]) {
-          userMessages[userId] = [];
-        }
-        userMessages[userId].push(msg);
-        
-        // Track unread messages
-        if (!msg.isAdmin && !msg.read) {
-          if (!unreadMessages[userId]) {
-            unreadMessages[userId] = 0;
-          }
-          unreadMessages[userId]++;
-        }
-      });
-      
-      // Update user list
-      updateUserList(users);
-      
-      // If currently viewing a chat, update it
-      if (currentChatUserId) {
-        loadChatMessages(userMessages[currentChatUserId] || []);
+    // Listen for new messages from users
+    db.ref('adminChats').orderByChild('timestamp').on('child_added', snapshot => {
+      const msg = snapshot.val();
+      if (!msg.isAdmin) {
+        // Update user list with new message
+        updateUserListWithNewMessage(msg.userId, msg.username, msg.message, msg.timestamp);
       }
     });
   }
 
-  // Update the user list in the chat interface
-  function updateUserList(users) {
-    userList.innerHTML = '';
+  // Update user list with new messages
+  function updateUserListWithNewMessage(userId, username, message, timestamp) {
+    // Check if user already exists in the list
+    let userItem = document.querySelector(`.user-item[data-user-id="${userId}"]`);
     
-    Object.entries(users).forEach(([userId, userData]) => {
-      if (userData.isAdmin) return; // Skip admin messages
-      
-      const userItem = document.createElement('div');
-      userItem.className = `user-item ${currentChatUserId === userId ? 'active' : ''}`;
+    if (!userItem) {
+      // Create new user item
+      userItem = document.createElement('div');
+      userItem.className = 'user-item';
       userItem.dataset.userId = userId;
       
       userItem.innerHTML = `
         <div class="user-item-header">
-          <span class="user-item-name">${userData.username}</span>
-          <span class="user-item-time">${formatTime(userData.timestamp)}</span>
+          <span class="user-item-name">${username}</span>
+          <span class="user-item-time">${formatTime(timestamp)}</span>
         </div>
-        <div class="user-item-message">${userData.lastMessage}</div>
-        ${unreadMessages[userId] ? `<div class="unread-badge">${unreadMessages[userId]}</div>` : ''}
+        <div class="user-item-message">${message}</div>
+        <div class="unread-badge">1</div>
       `;
       
       userItem.addEventListener('click', () => {
-        openUserChat(userId, userData.username);
+        openUserChat(userId, username);
       });
       
-      userList.appendChild(userItem);
-    });
+      userList.prepend(userItem);
+    } else {
+      // Update existing user item
+      const messageEl = userItem.querySelector('.user-item-message');
+      const timeEl = userItem.querySelector('.user-item-time');
+      let badge = userItem.querySelector('.unread-badge');
+      
+      messageEl.textContent = message;
+      timeEl.textContent = formatTime(timestamp);
+      
+      if (!badge) {
+        badge = document.createElement('div');
+        badge.className = 'unread-badge';
+        badge.textContent = '1';
+        userItem.appendChild(badge);
+      } else {
+        const count = parseInt(badge.textContent) + 1;
+        badge.textContent = count;
+      }
+      
+      // Move to top
+      userList.prepend(userItem);
+    }
+    
+    // Track unread messages
+    if (!unreadMessages[userId]) {
+      unreadMessages[userId] = 1;
+    } else {
+      unreadMessages[userId]++;
+    }
   }
 
   // Open chat with a specific user
   function openUserChat(userId, username) {
     currentChatUserId = userId;
     
-    // Mark messages as read
-    markMessagesAsRead(userId);
-    
     // Update UI
     document.querySelectorAll('.user-item').forEach(item => {
       item.classList.remove('active');
       if (item.dataset.userId === userId) {
         item.classList.add('active');
+        
+        // Remove unread badge
+        const badge = item.querySelector('.unread-badge');
+        if (badge) {
+          badge.remove();
+        }
       }
     });
     
     chatHeader.innerHTML = `<h3><i class="fas fa-user"></i> Chat with ${username}</h3>`;
     chatInputArea.style.display = 'flex';
     
+    // Clear unread count
+    unreadMessages[userId] = 0;
+    
     // Load messages for this user
-    db.ref('chat/messages').orderByChild('timestamp').once('value').then(snapshot => {
+    db.ref(`chats/${userId}/messages`).orderByChild('timestamp').once('value').then(snapshot => {
       const messages = snapshot.val() || {};
-      const userMessages = [];
+      const messagesArray = [];
       
       Object.values(messages).forEach(msg => {
-        if ((msg.userId === userId && !msg.isAdmin) || (msg.isAdmin && msg.replyTo === userId)) {
-          userMessages.push(msg);
-        }
+        messagesArray.push(msg);
       });
       
-      loadChatMessages(userMessages);
-    });
-  }
-
-  // Load chat messages into the chat container
-  function loadChatMessages(messages) {
-    chatContainer.innerHTML = '';
-    
-    if (messages.length === 0) {
-      chatContainer.innerHTML = '<p>No messages yet. Start the conversation!</p>';
-      return;
-    }
-    
-    messages.sort((a, b) => a.timestamp - b.timestamp);
-    
-    messages.forEach(msg => {
-      const messageDiv = document.createElement('div');
-      messageDiv.className = `chat-message ${msg.isAdmin ? 'admin' : 'user'}`;
+      // Sort by timestamp
+      messagesArray.sort((a, b) => a.timestamp - b.timestamp);
       
-      messageDiv.innerHTML = `
-        <div class="chat-message-header">
-          <span>${msg.username}</span>
-        </div>
-        <div class="chat-message-content">${msg.message}</div>
-        <div class="chat-message-time">${formatTime(msg.timestamp)}</div>
-      `;
-      
-      chatContainer.appendChild(messageDiv);
-    });
-    
-    // Scroll to bottom
-    chatContainer.scrollTop = chatContainer.scrollHeight;
-  }
-
-  // Mark messages as read for a user
-  function markMessagesAsRead(userId) {
-    db.ref('chat/messages').orderByChild('userId').equalTo(userId).once('value').then(snapshot => {
-      const updates = {};
-      snapshot.forEach(child => {
-        if (!child.val().read) {
-          updates[`${child.key}/read`] = true;
-        }
+      // Display messages
+      chatContainer.innerHTML = '';
+      messagesArray.forEach(msg => {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `chat-message ${msg.isAdmin ? 'admin' : 'user'}`;
+        
+        messageDiv.innerHTML = `
+          <div class="chat-message-header">
+            <span>${msg.username}</span>
+          </div>
+          <div class="chat-message-content">${msg.message}</div>
+          <div class="chat-message-time">${formatTime(msg.timestamp)}</div>
+        `;
+        
+        chatContainer.appendChild(messageDiv);
       });
       
-      if (Object.keys(updates).length > 0) {
-        db.ref('chat/messages').update(updates).then(() => {
-          // Clear unread count
-          delete unreadMessages[userId];
-          updateUserListUnread();
-        });
-      }
-    });
-  }
-
-  // Update unread counts in user list
-  function updateUserListUnread() {
-    document.querySelectorAll('.user-item').forEach(item => {
-      const userId = item.dataset.userId;
-      const badge = item.querySelector('.unread-badge');
-      
-      if (unreadMessages[userId]) {
-        if (!badge) {
-          const badge = document.createElement('div');
-          badge.className = 'unread-badge';
-          badge.textContent = unreadMessages[userId];
-          item.appendChild(badge);
-        } else {
-          badge.textContent = unreadMessages[userId];
-        }
-      } else if (badge) {
-        badge.remove();
-      }
+      // Scroll to bottom
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     });
   }
 
@@ -1224,28 +1172,50 @@
     if (!message || !currentChatUserId) return;
     
     // Get username from existing messages
-    let username = 'Admin';
-    db.ref('chat/messages').orderByChild('userId').equalTo(currentChatUserId).limitToLast(1).once('value').then(snapshot => {
+    let username = 'User';
+    db.ref(`chats/${currentChatUserId}/messages`).limitToLast(1).once('value').then(snapshot => {
       const messages = snapshot.val() || {};
       Object.values(messages).forEach(msg => {
         username = msg.username;
       });
       
-      // Save the message
+      // Save the message to user's chat
       const newMessage = {
         userId: 'admin',
         username: 'Admin',
         message: message,
         timestamp: Date.now(),
-        isAdmin: true,
-        replyTo: currentChatUserId
+        isAdmin: true
       };
       
-      db.ref('chat/messages').push().set(newMessage).then(() => {
-        chatInput.value = '';
-      }).catch(err => {
-        alert('Error sending message: ' + err.message);
-      });
+      db.ref(`chats/${currentChatUserId}/messages`).push().set(newMessage)
+        .then(() => {
+          // Also save to admin chats for tracking
+          db.ref('adminChats').push().set({
+            ...newMessage,
+            replyTo: currentChatUserId
+          });
+          
+          chatInput.value = '';
+          
+          // Add message to chat container
+          const messageDiv = document.createElement('div');
+          messageDiv.className = 'chat-message admin';
+          
+          messageDiv.innerHTML = `
+            <div class="chat-message-header">
+              <span>Admin</span>
+            </div>
+            <div class="chat-message-content">${message}</div>
+            <div class="chat-message-time">${formatTime(Date.now())}</div>
+          `;
+          
+          chatContainer.appendChild(messageDiv);
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        })
+        .catch(err => {
+          alert('Error sending message: ' + err.message);
+        });
     });
   }
 
@@ -1304,7 +1274,7 @@
     db.ref('visitorCount').off();
     db.ref('contents').off();
     db.ref('paidUsers').off();
-    db.ref('chat/messages').off();
+    db.ref('adminChats').off();
     db.ref('payments').off();
     
     // Reset UI
@@ -1344,7 +1314,7 @@
         div.innerHTML = `
           <div>
             <span>${item.title}</span><br/>
-            <small>Type: ${item.type || 'sensi'} | Downloads: ${item.downloads || 0} ${item.isPaid ? `| Price: ${item.price || 50} BDT` : ''}</small>
+            <small>Type: ${item.type || 'sensi'} | Downloads: ${item.downloads || 0} ${item.isPaid ? `| Price: ${item.price || 50} BDT</span>` : ''}</small>
           </div>
           <div class="content-item-actions">
             <button class="edit-btn" data-key="${key}"><i class="fas fa-edit"></i> Edit</button>
