@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Admin Panel - Free Fire Kingdom</title>
 
+<!-- Tailwind CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
@@ -407,6 +412,212 @@
     display: block;
   }
 
+  /* Add User Modal */
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+  }
+  .modal.show {
+    display: flex;
+  }
+  .modal-content {
+    background: linear-gradient(135deg, #222734 0%, #252a3a 100%);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(255, 122, 0, 0.5);
+    border: 1px solid rgba(255, 122, 0, 0.2);
+  }
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+  .modal-header h3 {
+    margin: 0;
+    color: #ff7a00;
+    font-size: 1.3rem;
+  }
+  .close-modal {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+  .modal-body {
+    margin-bottom: 1.5rem;
+  }
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  .modal-input {
+    width: 100%;
+    padding: 0.8rem;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    border: none;
+    background: rgba(45, 48, 61, 0.7);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+  }
+  .modal-btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .modal-btn-primary {
+    background: linear-gradient(135deg, #ff5c00, #ff7a00);
+    color: white;
+  }
+  .modal-btn-primary:hover {
+    background: linear-gradient(135deg, #e06000, #ff5c00);
+  }
+  .modal-btn-secondary {
+    background: #2d2f3a;
+    color: white;
+  }
+  .modal-btn-secondary:hover {
+    background: #3d3f4a;
+  }
+
+  /* Chat Styles */
+  .chat-container {
+    max-height: 500px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    background: rgba(45, 48, 61, 0.5);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 122, 0, 0.1);
+    padding: 1rem;
+  }
+  .chat-message {
+    margin-bottom: 1rem;
+    padding: 0.8rem;
+    border-radius: 8px;
+    background: rgba(45, 48, 61, 0.7);
+  }
+  .chat-message.admin {
+    background: rgba(255, 122, 0, 0.15);
+    border-left: 3px solid #ff7a00;
+  }
+  .chat-message.user {
+    background: rgba(76, 175, 80, 0.15);
+    border-left: 3px solid #4caf50;
+  }
+  .chat-message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  .chat-message-content {
+    margin-bottom: 0.5rem;
+  }
+  .chat-message-time {
+    color: #aaa;
+    font-size: 0.7rem;
+    text-align: right;
+  }
+  .chat-input-area {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+  }
+  .chat-input {
+    flex-grow: 1;
+    padding: 0.8rem;
+    border-radius: 8px;
+    border: none;
+    background: rgba(45, 48, 61, 0.7);
+    color: white;
+    font-family: 'Poppins', sans-serif;
+  }
+  .chat-send-btn {
+    background: linear-gradient(135deg, #ff5c00, #ff7a00);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .chat-send-btn:hover {
+    background: linear-gradient(135deg, #e06000, #ff5c00);
+  }
+  .user-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    background: rgba(45, 48, 61, 0.5);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 122, 0, 0.1);
+    padding: 0.5rem;
+  }
+  .user-item {
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background: rgba(45, 48, 61, 0.7);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .user-item:hover {
+    background: rgba(255, 122, 0, 0.1);
+  }
+  .user-item.active {
+    background: rgba(255, 122, 0, 0.2);
+    border-left: 3px solid #ff7a00;
+  }
+  .user-item-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.3rem;
+  }
+  .user-item-name {
+    font-weight: 600;
+    color: #ffa040;
+  }
+  .user-item-time {
+    color: #aaa;
+    font-size: 0.7rem;
+  }
+  .user-item-message {
+    font-size: 0.8rem;
+    color: #ccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .unread-badge {
+    background: #ff5c00;
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    margin-left: auto;
+    margin-right: 5px;
+  }
+
   /* Responsive */
   @media (max-width: 768px) {
     header {
@@ -435,6 +646,9 @@
     .order-actions {
       justify-content: flex-end;
     }
+    .chat-container {
+      max-height: 300px;
+    }
   }
 
   @media (max-width: 480px) {
@@ -456,11 +670,14 @@
       padding: 0.5rem;
       font-size: 0.9rem;
     }
+    .chat-input-area {
+      flex-direction: column;
+    }
+    .chat-send-btn {
+      padding: 0.6rem;
+    }
   }
 </style>
-
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -486,7 +703,7 @@
   <div class="tabs">
     <div class="tab active" data-tab="content"><i class="fas fa-box-open"></i> Content</div>
     <div class="tab" data-tab="paid"><i class="fas fa-user-check"></i> Paid Users</div>
-    <div class="tab" data-tab="messages"><i class="fas fa-comments"></i> User Messages</div>
+    <div class="tab" data-tab="messages"><i class="fas fa-comments"></i> Live Support</div>
     <div class="tab" data-tab="orders"><i class="fas fa-receipt"></i> Order Logs</div>
     <div class="tab" data-tab="appearance"><i class="fas fa-palette"></i> Appearance</div>
     <div class="tab" data-tab="stats"><i class="fas fa-chart-line"></i> Statistics</div>
@@ -546,14 +763,30 @@
   <div class="tab-content" id="paidTab">
     <section aria-label="Paid Users Management">
       <h2><i class="fas fa-user-check"></i> Paid Users Management</h2>
+      <button id="addPaidUserBtn" style="margin-bottom: 1rem;"><i class="fas fa-user-plus"></i> Add Paid User</button>
       <div class="paid-users-list" id="paidUsersList"></div>
     </section>
   </div>
 
   <div class="tab-content" id="messagesTab">
-    <section aria-label="User Messages">
-      <h2><i class="fas fa-comments"></i> User Messages</h2>
-      <div id="messagesList"></div>
+    <section aria-label="Live Support">
+      <h2><i class="fas fa-comments"></i> Live Support</h2>
+      <div style="display: flex; gap: 1rem;">
+        <div style="flex: 1;">
+          <h3><i class="fas fa-users"></i> Active Conversations</h3>
+          <div class="user-list" id="userList"></div>
+        </div>
+        <div style="flex: 2;">
+          <div id="chatHeader" style="margin-bottom: 1rem;">
+            <h3>Select a user to chat</h3>
+          </div>
+          <div class="chat-container" id="chatContainer"></div>
+          <div class="chat-input-area" id="chatInputArea" style="display: none;">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." />
+            <button class="chat-send-btn" id="chatSendBtn"><i class="fas fa-paper-plane"></i></button>
+          </div>
+        </div>
+      </div>
     </section>
   </div>
 
@@ -631,6 +864,42 @@
   <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
 </main>
 
+<!-- Add Paid User Modal -->
+<div class="modal" id="addPaidUserModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3><i class="fas fa-user-plus"></i> Add Paid User</h3>
+      <button class="close-modal" aria-label="Close modal">×</button>
+    </div>
+    <div class="modal-body">
+      <label for="paidUsernameInput">Username</label>
+      <input type="text" id="paidUsernameInput" placeholder="Enter username" class="modal-input" />
+      
+      <label for="paidContentSelect">Content</label>
+      <select id="paidContentSelect" class="modal-input">
+        <!-- Will be populated with content -->
+      </select>
+      
+      <label for="paidAmountInput">Amount (BDT)</label>
+      <input type="number" id="paidAmountInput" placeholder="Enter amount" class="modal-input" min="0" />
+      
+      <label for="paidMethodSelect">Payment Method</label>
+      <select id="paidMethodSelect" class="modal-input">
+        <option value="bkash">bKash</option>
+        <option value="nagad">Nagad</option>
+        <option value="manual">Manual</option>
+      </select>
+      
+      <label for="paidTransactionInput">Transaction ID (optional)</label>
+      <input type="text" id="paidTransactionInput" placeholder="Enter transaction ID" class="modal-input" />
+    </div>
+    <div class="modal-footer">
+      <button class="modal-btn modal-btn-secondary close-modal">Cancel</button>
+      <button class="modal-btn modal-btn-primary" id="savePaidUserBtn">Add User</button>
+    </div>
+  </div>
+</div>
+
 <script>
   const ADMIN_KEY = "swampod";
 
@@ -681,9 +950,22 @@
 
   // Paid users elements
   const paidUsersList = document.getElementById('paidUsersList');
+  const addPaidUserBtn = document.getElementById('addPaidUserBtn');
+  const addPaidUserModal = document.getElementById('addPaidUserModal');
+  const paidUsernameInput = document.getElementById('paidUsernameInput');
+  const paidContentSelect = document.getElementById('paidContentSelect');
+  const paidAmountInput = document.getElementById('paidAmountInput');
+  const paidMethodSelect = document.getElementById('paidMethodSelect');
+  const paidTransactionInput = document.getElementById('paidTransactionInput');
+  const savePaidUserBtn = document.getElementById('savePaidUserBtn');
 
-  // Messages elements
-  const messagesList = document.getElementById('messagesList');
+  // Chat elements
+  const userList = document.getElementById('userList');
+  const chatContainer = document.getElementById('chatContainer');
+  const chatHeader = document.getElementById('chatHeader');
+  const chatInputArea = document.getElementById('chatInputArea');
+  const chatInput = document.getElementById('chatInput');
+  const chatSendBtn = document.getElementById('chatSendBtn');
 
   // Orders elements
   const orderLog = document.getElementById('orderLog');
@@ -715,9 +997,14 @@
   // Logout button
   const logoutBtn = document.getElementById('logoutBtn');
 
+  // Modal close buttons
+  const closeModalButtons = document.querySelectorAll('.close-modal');
+
   // State
   let currentEditingKey = null;
   let downloadsChartInstance = null;
+  let currentChatUserId = null;
+  let unreadMessages = {};
 
   // Initialize the admin panel
   function initAdminPanel() {
@@ -726,9 +1013,9 @@
     loadSettings();
     loadTheme();
     loadPaidUsers();
-    loadUserMessages();
     loadOrderLogs();
     initStats();
+    initLiveSupport();
     
     // Set up real-time listeners
     setupRealtimeListeners();
@@ -750,11 +1037,222 @@
     // Paid users updates
     db.ref('paidUsers').on('value', loadPaidUsers);
     
-    // Messages updates
-    db.ref('chat/messages').orderByChild('timestamp').on('value', loadUserMessages);
-    
     // Order updates
     db.ref('payments').orderByChild('timestamp').on('value', loadOrderLogs);
+  }
+
+  // Initialize live support system
+  function initLiveSupport() {
+    // Listen for new messages
+    db.ref('chat/messages').orderByChild('timestamp').on('value', snapshot => {
+      const messages = snapshot.val() || {};
+      const users = {};
+      const userMessages = {};
+      
+      // Organize messages by user
+      Object.entries(messages).forEach(([key, msg]) => {
+        const userId = msg.isAdmin ? msg.replyTo || 'admin' : msg.userId;
+        
+        if (!users[userId]) {
+          users[userId] = {
+            username: msg.username,
+            lastMessage: msg.message,
+            timestamp: msg.timestamp,
+            isAdmin: msg.isAdmin
+          };
+        }
+        
+        if (!userMessages[userId]) {
+          userMessages[userId] = [];
+        }
+        userMessages[userId].push(msg);
+        
+        // Track unread messages
+        if (!msg.isAdmin && !msg.read) {
+          if (!unreadMessages[userId]) {
+            unreadMessages[userId] = 0;
+          }
+          unreadMessages[userId]++;
+        }
+      });
+      
+      // Update user list
+      updateUserList(users);
+      
+      // If currently viewing a chat, update it
+      if (currentChatUserId) {
+        loadChatMessages(userMessages[currentChatUserId] || []);
+      }
+    });
+  }
+
+  // Update the user list in the chat interface
+  function updateUserList(users) {
+    userList.innerHTML = '';
+    
+    Object.entries(users).forEach(([userId, userData]) => {
+      if (userData.isAdmin) return; // Skip admin messages
+      
+      const userItem = document.createElement('div');
+      userItem.className = `user-item ${currentChatUserId === userId ? 'active' : ''}`;
+      userItem.dataset.userId = userId;
+      
+      userItem.innerHTML = `
+        <div class="user-item-header">
+          <span class="user-item-name">${userData.username}</span>
+          <span class="user-item-time">${formatTime(userData.timestamp)}</span>
+        </div>
+        <div class="user-item-message">${userData.lastMessage}</div>
+        ${unreadMessages[userId] ? `<div class="unread-badge">${unreadMessages[userId]}</div>` : ''}
+      `;
+      
+      userItem.addEventListener('click', () => {
+        openUserChat(userId, userData.username);
+      });
+      
+      userList.appendChild(userItem);
+    });
+  }
+
+  // Open chat with a specific user
+  function openUserChat(userId, username) {
+    currentChatUserId = userId;
+    
+    // Mark messages as read
+    markMessagesAsRead(userId);
+    
+    // Update UI
+    document.querySelectorAll('.user-item').forEach(item => {
+      item.classList.remove('active');
+      if (item.dataset.userId === userId) {
+        item.classList.add('active');
+      }
+    });
+    
+    chatHeader.innerHTML = `<h3><i class="fas fa-user"></i> Chat with ${username}</h3>`;
+    chatInputArea.style.display = 'flex';
+    
+    // Load messages for this user
+    db.ref('chat/messages').orderByChild('timestamp').once('value').then(snapshot => {
+      const messages = snapshot.val() || {};
+      const userMessages = [];
+      
+      Object.values(messages).forEach(msg => {
+        if ((msg.userId === userId && !msg.isAdmin) || (msg.isAdmin && msg.replyTo === userId)) {
+          userMessages.push(msg);
+        }
+      });
+      
+      loadChatMessages(userMessages);
+    });
+  }
+
+  // Load chat messages into the chat container
+  function loadChatMessages(messages) {
+    chatContainer.innerHTML = '';
+    
+    if (messages.length === 0) {
+      chatContainer.innerHTML = '<p>No messages yet. Start the conversation!</p>';
+      return;
+    }
+    
+    messages.sort((a, b) => a.timestamp - b.timestamp);
+    
+    messages.forEach(msg => {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `chat-message ${msg.isAdmin ? 'admin' : 'user'}`;
+      
+      messageDiv.innerHTML = `
+        <div class="chat-message-header">
+          <span>${msg.username}</span>
+        </div>
+        <div class="chat-message-content">${msg.message}</div>
+        <div class="chat-message-time">${formatTime(msg.timestamp)}</div>
+      `;
+      
+      chatContainer.appendChild(messageDiv);
+    });
+    
+    // Scroll to bottom
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+  }
+
+  // Mark messages as read for a user
+  function markMessagesAsRead(userId) {
+    db.ref('chat/messages').orderByChild('userId').equalTo(userId).once('value').then(snapshot => {
+      const updates = {};
+      snapshot.forEach(child => {
+        if (!child.val().read) {
+          updates[`${child.key}/read`] = true;
+        }
+      });
+      
+      if (Object.keys(updates).length > 0) {
+        db.ref('chat/messages').update(updates).then(() => {
+          // Clear unread count
+          delete unreadMessages[userId];
+          updateUserListUnread();
+        });
+      }
+    });
+  }
+
+  // Update unread counts in user list
+  function updateUserListUnread() {
+    document.querySelectorAll('.user-item').forEach(item => {
+      const userId = item.dataset.userId;
+      const badge = item.querySelector('.unread-badge');
+      
+      if (unreadMessages[userId]) {
+        if (!badge) {
+          const badge = document.createElement('div');
+          badge.className = 'unread-badge';
+          badge.textContent = unreadMessages[userId];
+          item.appendChild(badge);
+        } else {
+          badge.textContent = unreadMessages[userId];
+        }
+      } else if (badge) {
+        badge.remove();
+      }
+    });
+  }
+
+  // Send a message to the current chat user
+  function sendMessage() {
+    const message = chatInput.value.trim();
+    if (!message || !currentChatUserId) return;
+    
+    // Get username from existing messages
+    let username = 'Admin';
+    db.ref('chat/messages').orderByChild('userId').equalTo(currentChatUserId).limitToLast(1).once('value').then(snapshot => {
+      const messages = snapshot.val() || {};
+      Object.values(messages).forEach(msg => {
+        username = msg.username;
+      });
+      
+      // Save the message
+      const newMessage = {
+        userId: 'admin',
+        username: 'Admin',
+        message: message,
+        timestamp: Date.now(),
+        isAdmin: true,
+        replyTo: currentChatUserId
+      };
+      
+      db.ref('chat/messages').push().set(newMessage).then(() => {
+        chatInput.value = '';
+      }).catch(err => {
+        alert('Error sending message: ' + err.message);
+      });
+    });
+  }
+
+  // Format timestamp
+  function formatTime(timestamp) {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 
   // Toggle price input based on isPaid checkbox
@@ -793,6 +1291,14 @@
     }
   });
 
+  // Chat send button and enter key
+  chatSendBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+
   logoutBtn.onclick = () => {
     // Clear all Firebase listeners
     db.ref('visitorCount').off();
@@ -806,6 +1312,7 @@
     loginSection.style.display = 'block';
     adminPanel.style.display = 'none';
     currentEditingKey = null;
+    currentChatUserId = null;
     clearForm();
   };
 
@@ -989,7 +1496,7 @@
         div.innerHTML = `
           <div class="paid-user-info">
             <div><strong>${item.username}</strong> - ${item.contentTitle}</div>
-            <small>Paid: ${item.amount} BDT | ${new Date(item.timestamp).toLocaleString()}</small>
+            <small>Paid: ${item.amount} BDT via ${item.paymentMethod} | ${new Date(item.timestamp).toLocaleString()}</small>
           </div>
           <div class="paid-user-actions">
             <button class="delete-btn" data-key="${key}"><i class="fas fa-trash"></i> Remove</button>
@@ -1009,98 +1516,84 @@
     });
   }
 
-  // Load user messages with improved chat functionality
-  function loadUserMessages() {
-    db.ref('chat/messages').orderByChild('timestamp').once('value').then(snapshot => {
-      const data = snapshot.val() || {};
-      messagesList.innerHTML = '';
-
-      // Group messages by user
-      const userMessages = {};
-      Object.entries(data).forEach(([key, msg]) => {
-        if (!msg.isAdmin) {
-          if (!userMessages[msg.userId]) {
-            userMessages[msg.userId] = {
-              username: msg.username,
-              messages: [],
-              replies: []
-            };
-          }
-          userMessages[msg.userId].messages.push(msg);
-        } else {
-          // This is an admin reply
-          const userId = msg.replyTo;
-          if (userMessages[userId]) {
-            userMessages[userId].replies.push(msg);
-          }
+  // Add paid user modal
+  addPaidUserBtn.addEventListener('click', () => {
+    // Load content list for dropdown
+    db.ref('contents').once('value').then(snapshot => {
+      const contents = snapshot.val() || {};
+      paidContentSelect.innerHTML = '';
+      
+      Object.entries(contents).forEach(([key, item]) => {
+        if (item.isPaid) {
+          const option = document.createElement('option');
+          option.value = key;
+          option.textContent = `${item.title} (${item.price || 50} BDT)`;
+          paidContentSelect.appendChild(option);
         }
       });
+      
+      if (paidContentSelect.options.length > 0) {
+        addPaidUserModal.classList.add('show');
+      } else {
+        alert('No paid content available. Please add paid content first.');
+      }
+    });
+  });
 
-      // Display messages with replies
-      Object.entries(userMessages).forEach(([userId, userData]) => {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = 'message-item';
-        
-        let messagesHtml = '';
-        
-        // Sort all messages by timestamp
-        const allMessages = [...userData.messages, ...userData.replies];
-        allMessages.sort((a, b) => a.timestamp - b.timestamp);
-        
-        // Display all messages in chronological order
-        allMessages.forEach(msg => {
-          const isAdminMsg = msg.isAdmin;
-          messagesHtml += `
-            <div class="message-content">
-              <div class="message-header">
-                <span style="color: ${isAdminMsg ? '#ff7a00' : '#4caf50'}">${msg.username}</span>
-                <span>${new Date(msg.timestamp).toLocaleString()}</span>
-              </div>
-              <div>${msg.message}</div>
-            </div>
-          `;
+  // Save paid user
+  savePaidUserBtn.addEventListener('click', () => {
+    const username = paidUsernameInput.value.trim();
+    const contentId = paidContentSelect.value;
+    const amount = paidAmountInput.value.trim() || '0';
+    const method = paidMethodSelect.value;
+    const transactionId = paidTransactionInput.value.trim();
+    
+    if (!username || !contentId) {
+      alert('Please fill all required fields');
+      return;
+    }
+    
+    // Get content details
+    db.ref(`contents/${contentId}`).once('value').then(snapshot => {
+      const content = snapshot.val();
+      if (!content) {
+        alert('Selected content not found');
+        return;
+      }
+      
+      const paidUserData = {
+        username: username,
+        contentId: contentId,
+        contentTitle: content.title,
+        amount: parseInt(amount) || content.price || 50,
+        paymentMethod: method,
+        transactionId: transactionId || 'Manual',
+        timestamp: Date.now()
+      };
+      
+      db.ref('paidUsers').push().set(paidUserData)
+        .then(() => {
+          alert('Paid user added successfully!');
+          addPaidUserModal.classList.remove('show');
+          paidUsernameInput.value = '';
+          paidAmountInput.value = '';
+          paidTransactionInput.value = '';
+          loadPaidUsers();
+        })
+        .catch(err => {
+          alert('Error adding paid user: ' + err.message);
         });
+    });
+  });
 
-        messageDiv.innerHTML = `
-          <div class="message-header">
-            <strong>Conversation with ${userData.username}</strong>
-            <small>User ID: ${userId}</small>
-          </div>
-          ${messagesHtml}
-          <div class="message-reply">
-            <textarea id="reply-${userId}" placeholder="Type your reply to ${userData.username}..."></textarea>
-            <button class="message-reply-btn" data-user="${userId}"><i class="fas fa-paper-plane"></i> Send Reply</button>
-          </div>
-        `;
-        
-        messagesList.appendChild(messageDiv);
-      });
-
-      // Add reply button functionality
-      document.querySelectorAll('.message-reply-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          const userId = e.target.dataset.user;
-          const replyText = document.getElementById(`reply-${userId}`).value.trim();
-          
-          if (replyText) {
-            const timestamp = Date.now();
-            db.ref('chat/messages').push().set({
-              userId: 'admin',
-              username: 'Admin',
-              message: replyText,
-              timestamp: timestamp,
-              isAdmin: true,
-              replyTo: userId
-            }).then(() => {
-              document.getElementById(`reply-${userId}`).value = '';
-            }).catch(err => {
-              alert('Error sending reply: ' + err.message);
-            });
-          }
-        });
+  // Close modals
+  closeModalButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.modal').forEach(modal => {
+        modal.classList.remove('show');
       });
     });
-  }
+  });
 
   // Load order logs with approve/reject functionality
   function loadOrderLogs() {
